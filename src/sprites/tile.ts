@@ -1,7 +1,8 @@
 import * as Phaser from 'phaser-ce';
 import CFG from '../cfg';
 import GameStage from '../states/game';
-import LogicTile from '../logic/tile';
+import LogicTile, {TileType} from '../logic/tile';
+import Building from '../logic/building';
 
 export default class Tile extends Phaser.Sprite {
     gameState: GameStage;
@@ -22,10 +23,33 @@ export default class Tile extends Phaser.Sprite {
         this.sprite.y = 1;
         this.addChild(this.sprite);
         this.updateTile();
+
+        this.sprite.inputEnabled = true;
+        this.sprite.input.pixelPerfectOver = true;
+        this.sprite.input.pixelPerfectClick = true;
+        this.sprite.events.onInputOver.add(() => {
+            this.game.debug.text(`OVER ${this.tile.x} ${this.tile.y}`, 32, 32);
+        })
+        this.sprite.events.onInputDown.add(() => {
+            console.log(`DOWN ${this.tile.x} ${this.tile.y}`, 32, 64);
+        })
     }
 
     updateTile() {
-        this.sprite.loadTexture('tile');
+        if (!this.tile.knowed) {
+            this.sprite.loadTexture('fog');
+            return;
+        }
+
+        switch(this.tile.type) {
+            case TileType.CAPITOL:
+                this.sprite.loadTexture(`capitol-${(this.tile as Building).level}`);
+                break;
+
+            default:
+                this.sprite.loadTexture('tile');
+        }
+
     }
 
 

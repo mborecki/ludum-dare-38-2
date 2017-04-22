@@ -27,7 +27,6 @@ export default class Map extends Phaser.Sprite {
             let tx = i % CFG.MAP.W;
             let ty = Math.floor(i / CFG.MAP.W)
             let [x, y] = MapToISO(tx, ty);
-            console.log(x,y);
             let t = new Tile({
                 stage: this.gameState,
                 x,

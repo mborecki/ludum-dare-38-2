@@ -1,11 +1,23 @@
 export enum TileType {
-    EMPTY
+    EMPTY,
+    CAPITOL
 }
 
 export default class Tile {
     type: TileType;
+    position: number[];
+    knowed: boolean = false;
 
-    constructor(type=TileType.EMPTY) {
+    constructor(position=[], type=TileType.EMPTY) {
         this.type = type;
+        this.position = position;
+    }
+
+    get x() {
+        return this.position[0];
+    }
+
+    get y() {
+        return this.position[1];
     }
 }

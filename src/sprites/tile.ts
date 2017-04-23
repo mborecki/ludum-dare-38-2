@@ -8,6 +8,7 @@ export default class Tile extends Phaser.Sprite {
     gameState: GameStage;
     tile: LogicTile;
     sprite: Phaser.Sprite;
+    onClick: Phaser.Signal = new Phaser.Signal();
     
     constructor({stage, x, y, tile}) {
         super(stage.game, x, y);
@@ -28,10 +29,10 @@ export default class Tile extends Phaser.Sprite {
         this.sprite.input.pixelPerfectOver = true;
         this.sprite.input.pixelPerfectClick = true;
         this.sprite.events.onInputOver.add(() => {
-            this.game.debug.text(`OVER ${this.tile.x} ${this.tile.y}`, 32, 32);
+            // this.game.debug.text(`OVER ${this.tile.x} ${this.tile.y}`, 32, 32);
         })
         this.sprite.events.onInputDown.add(() => {
-            console.log(`DOWN ${this.tile.x} ${this.tile.y}`, 32, 64);
+            this.onClick.dispatch();
         })
     }
 

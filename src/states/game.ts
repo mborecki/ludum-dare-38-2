@@ -5,7 +5,8 @@ import {TileType} from '../logic/tile';
 import Map from '../sprites/map';
 
 enum PlayerState {
-  IDLE
+  IDLE,
+  EXPLORE
 }
 
 export default class GameState extends Phaser.State {
@@ -34,9 +35,8 @@ export default class GameState extends Phaser.State {
 
     this.initLogicMap();
     this.initMap();
+    this.initUI();
 
-    this.upkeepPhase();
-    this.upkeepPhase();
     this.upkeepPhase();
 
     window['GS'] = this;
@@ -49,7 +49,7 @@ export default class GameState extends Phaser.State {
   }
 
   render () {
-
+    this.game.debug.text(`${this.playerState} ACT: ${this.resources.actions}`, 32, 32, 'red');
   }
 
   initLogicMap() {
@@ -59,6 +59,9 @@ export default class GameState extends Phaser.State {
   initMap() {
     this.map = new Map({stage: this, x: 255, y: -60});
     this.game.add.existing(this.map);
+    this.map.onTileClicked.add((x, y) => {
+      this.tileClicked(x, y);
+    })
   }
 
   upkeepPhase() {
@@ -69,5 +72,45 @@ export default class GameState extends Phaser.State {
     r.actions = Math.min(r.food, r.population);
 
     console.info(this.resources);
+  }
+
+  initUI() {
+
+    // ENT TURN
+    let btnEnd = this.game.add.sprite(10, 60, 'btn-end');
+    btnEnd.inputEnabled = true;
+    btnEnd.events.onInputDown.add(() => {
+      this.endPressed();
+    });
+
+
+    // EXPLORE
+    let btnExplore = this.game.add.sprite(10, 10, 'btn-explore');
+    btnExplore.inputEnabled = true;
+    btnExplore.events.onInputDown.add(() => {
+      this.explorePressed();
+    });
+  }
+
+  explorePressed() {
+    this.playerState = PlayerState.EXPLORE;
+  }
+
+  endPressed() {
+    this.upkeepPhase();
+  }
+
+  tileClicked(x, y) {
+    let t = this.lMap.get(x, y);
+    switch (this.playerState) {
+      case PlayerState.EXPLORE:
+        if(!t.knowed && this.resources.actions) {
+          t.knowed = true;
+          this.resources.actions--;
+        } 
+        this.playerState = PlayerState.IDLE;
+        this.map.updateTiles();
+        break;
+    }
   }
 }

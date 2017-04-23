@@ -8,7 +8,8 @@ import {MapToISO} from '../utils';
 export default class Map extends Phaser.Sprite {
     gameState: GameStage;
     map: LogicMap;
-    tiles: Phaser.Sprite[];
+    tiles: Tile[];
+    onTileClicked: Phaser.Signal = new Phaser.Signal();
     
     constructor({stage, x, y}) {
         super(stage.game, x, y);
@@ -35,7 +36,16 @@ export default class Map extends Phaser.Sprite {
             });
 
             this.addChild(t);
+            t.onClick.add(() => {
+                this.onTileClicked.dispatch(tx, ty);
+            })
             this.tiles.push(t);
         }
+    }
+
+    updateTiles() {
+        this.tiles.forEach(t => {
+            t.updateTile();
+        });
     }
 }
